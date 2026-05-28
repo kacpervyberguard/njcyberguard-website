@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Your Custom Security System | NJ CyberGuard</title>
+  <style>
+    :root{--navy:#0d1b3e;--blue:#1a55af;--sky:#3b82f6;--accent:#e8f0fe;--light:#f7f9ff;--gray:#64748b;--border:#e2e8f0}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:#1e293b;background:#fff}
+    a{color:inherit;text-decoration:none}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);padding:0 24px}
+    .nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+    .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.05rem;color:var(--navy)}
+    .logo-icon{width:32px;height:32px;background:var(--navy);border-radius:8px;display:flex;align-items:center;justify-content:center}
+    .nav-links{display:flex;align-items:center;gap:28px;font-size:.92rem}
+    .nav-links a{color:var(--gray);transition:color .15s}
+    .nav-links a:hover{color:var(--navy)}
+    .nav-cta{background:var(--navy);color:#fff!important;padding:8px 18px;border-radius:7px;font-weight:600}
+    .nav-cta:hover{background:var(--blue)!important}
+
+    /* HERO */
+    .page-hero{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%);color:#fff;text-align:center;padding:56px 24px 48px}
+    .page-hero .label{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 14px;font-size:.82rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-bottom:16px}
+    .page-hero h1{font-size:clamp(1.7rem,4vw,2.6rem);font-weight:800;margin-bottom:12px;letter-spacing:-.02em}
+    .page-hero p{font-size:1rem;opacity:.85;max-width:540px;margin:0 auto}
+
+    /* BUILDER LAYOUT */
+    .builder-wrap{max-width:1100px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:1fr 320px;gap:40px;align-items:start}
+    @media(max-width:780px){.builder-wrap{grid-template-columns:1fr}.quote-sidebar{position:static!important;order:-1}}
+
+    /* STEP CARDS */
+    .step-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px}
+    .step-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+    .step-num{width:32px;height:32px;border-radius:50%;background:var(--navy);color:#fff;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .step-title{font-size:1rem;font-weight:700;color:var(--navy)}
+    .step-subtitle{font-size:.8rem;color:var(--gray);margin-top:2px}
+
+    /* PROPERTY */
+    .property-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    @media(max-width:500px){.property-grid{grid-template-columns:1fr}}
+    .prop-btn{border:2px solid var(--border);border-radius:10px;padding:14px 12px;background:#fff;cursor:pointer;text-align:center;transition:all .15s}
+    .prop-btn:hover{border-color:var(--sky)}
+    .prop-btn.selected{border-color:var(--blue);background:var(--accent)}
+    .prop-icon{font-size:1.6rem;margin-bottom:6px}
+    .prop-label{font-weight:700;font-size:.9rem;color:var(--navy)}
+    .prop-desc{font-size:.78rem;color:var(--gray);margin-top:2px}
+
+    /* ECOSYSTEM */
+    .eco-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    @media(max-width:600px){.eco-grid{grid-template-columns:repeat(2,1fr)}}
+    .eco-btn{border:2px solid var(--border);border-radius:10px;padding:12px 10px;background:#fff;cursor:pointer;text-align:center;transition:all .15s}
+    .eco-btn:hover{border-color:var(--sky)}
+    .eco-btn.selected{border-color:var(--blue);background:var(--accent)}
+    .eco-icon{font-size:1.4rem;margin-bottom:5px}
+    .eco-label{font-weight:700;font-size:.84rem;color:var(--navy)}
+    .eco-desc{font-size:.72rem;color:var(--gray);margin-top:3px;line-height:1.35}
+
+    /* CONNECTIVITY BADGES */
+    .conn{display:inline-flex;align-items:center;font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:9px;white-space:nowrap}
+    .conn-wifi{background:#dbeafe;color:#1d4ed8}
+    .conn-poe{background:#ffedd5;color:#c2410c}
+    .conn-wired{background:#fef3c7;color:#92400e}
+    .conn-zigbee{background:#ede9fe;color:#6d28d9}
+    .conn-zwave{background:#dcfce7;color:#166534}
+    .conn-solar{background:#fef9c3;color:#854d0e}
+    .conn-rf{background:#f1f5f9;color:#475569}
+
+    /* PRODUCT CATEGORIES */
+    .cat-section{margin-bottom:8px;border:1px solid var(--border);border-radius:10px;overflow:hidden}
+    .cat-header{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--light);cursor:pointer;user-select:none;transition:background .15s}
+    .cat-header:hover{background:var(--accent)}
+    .cat-icon{font-size:1.2rem;flex-shrink:0}
+    .cat-info{flex:1;min-width:0}
+    .cat-name{font-weight:700;font-size:.9rem;color:var(--navy)}
+    .cat-hint{font-size:.74rem;color:var(--gray)}
+    .cat-badge{font-size:.78rem;font-weight:700;color:var(--blue);background:var(--accent);border:1px solid #c7d9fb;border-radius:12px;padding:2px 9px;flex-shrink:0;min-width:24px;text-align:center;transition:opacity .15s}
+    .cat-badge:empty{opacity:0}
+    .cat-chevron{color:var(--gray);font-size:.8rem;flex-shrink:0;transition:transform .2s}
+    .cat-header.open .cat-chevron{transform:rotate(180deg)}
+    .cat-body{display:none}
+    .cat-body.open{display:block}
+
+    /* PRODUCT ROWS */
+    .prod-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;padding:12px 16px;border-top:1px solid var(--border);transition:background .1s}
+    .prod-row:hover{background:#fafbfd}
+    .prod-main{}
+    .prod-name{font-size:.87rem;font-weight:600;color:#1e293b;margin-bottom:2px}
+    .prod-spec{font-size:.74rem;color:var(--gray);line-height:1.4;margin-bottom:4px}
+    .prod-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+    .prod-price-tag{font-size:.82rem;font-weight:700;color:var(--blue)}
+    .prod-controls{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;padding-top:1px}
+    .qty-ctrl{display:flex;align-items:center;gap:7px}
+    .qty-btn{width:26px;height:26px;border:1.5px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:.95rem;font-weight:600;display:flex;align-items:center;justify-content:center;line-height:1;transition:all .15s;padding:0}
+    .qty-btn:hover:not(:disabled){border-color:var(--blue);color:var(--blue)}
+    .qty-btn:disabled{opacity:.3;cursor:default}
+    .qty-val{font-size:.88rem;font-weight:700;color:var(--navy);min-width:18px;text-align:center}
+    .prod-subtotal{font-size:.79rem;font-weight:700;color:var(--navy)}
+    .prod-subtotal.zero{color:var(--border)}
+
+    /* SERVICES */
+    .svc-section-label{font-size:.78rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.06em;margin:18px 0 10px}
+    .svc-section-label:first-child{margin-top:0}
+    .svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+    @media(max-width:500px){.svc-grid{grid-template-columns:1fr}}
+    .svc-card{border:2px solid var(--border);border-radius:10px;padding:13px;cursor:pointer;transition:all .15s;position:relative}
+    .svc-card:hover{border-color:var(--sky)}
+    .svc-card.selected{border-color:var(--blue);background:var(--accent)}
+    .svc-card.featured{border-color:#d8b4fe}
+    .svc-card.featured.selected{background:#f5f3ff;border-color:#a855f7}
+    .svc-featured-tag{position:absolute;top:-1px;right:12px;background:#a855f7;color:#fff;font-size:.67rem;font-weight:700;padding:2px 8px;border-radius:0 0 6px 6px}
+    .svc-check{width:16px;height:16px;border-radius:4px;border:2px solid var(--border);margin-bottom:8px;transition:all .15s;position:relative;flex-shrink:0}
+    .svc-card.selected .svc-check{background:var(--blue);border-color:var(--blue)}
+    .svc-card.featured.selected .svc-check{background:#a855f7;border-color:#a855f7}
+    .svc-card.selected .svc-check::after{content:'';position:absolute;top:1px;left:3px;width:5px;height:8px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg)}
+    .svc-icon{font-size:1.25rem;margin-bottom:5px}
+    .svc-name{font-size:.86rem;font-weight:700;color:var(--navy);margin-bottom:2px}
+    .svc-price{font-size:.8rem;font-weight:700;color:var(--blue);margin-bottom:4px}
+    .svc-card.featured .svc-price,.svc-card.featured.selected .svc-price{color:#7c3aed}
+    .svc-desc{font-size:.74rem;color:var(--gray);line-height:1.45}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+    @media(max-width:500px){.form-grid{grid-template-columns:1fr}}
+    .form-group{display:flex;flex-direction:column;gap:5px}
+    .form-group.full{grid-column:1/-1}
+    .form-group label{font-size:.82rem;font-weight:600;color:var(--navy)}
+    .form-required{color:#e53e3e}
+    .form-group input,.form-group textarea,.form-group select{border:1.5px solid var(--border);border-radius:7px;padding:9px 12px;font-size:.9rem;font-family:inherit;transition:border-color .15s;background:#fff;color:#1e293b}
+    .form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--blue)}
+    .form-group textarea{resize:vertical;min-height:90px}
+    .form-submit{width:100%;padding:13px;background:var(--navy);color:#fff;border:none;border-radius:9px;font-size:.95rem;font-weight:700;cursor:pointer;transition:background .15s;margin-top:4px}
+    .form-submit:hover:not(:disabled){background:var(--blue)}
+    .form-submit:disabled{opacity:.7;cursor:default}
+    .form-success{display:none;margin-top:14px;padding:12px 16px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;color:#166534;font-size:.88rem}
+    .form-error{display:none;margin-top:14px;padding:12px 16px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;color:#991b1b;font-size:.88rem}
+
+    /* QUOTE SIDEBAR */
+    .quote-sidebar{position:sticky;top:80px}
+    .quote-card{border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .quote-header{background:var(--navy);color:#fff;padding:16px 20px}
+    .quote-header h3{font-size:1rem;font-weight:700;margin-bottom:2px}
+    .quote-header p{font-size:.8rem;opacity:.75}
+    .quote-body{padding:16px 20px}
+    .quote-line{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;gap:8px}
+    .quote-line span{font-size:.82rem;color:var(--gray)}
+    .quote-line strong{font-size:.82rem;color:var(--navy);white-space:nowrap}
+    .quote-line.indent{margin-left:10px;margin-bottom:5px}
+    .quote-line.indent span{font-size:.78rem}
+    .quote-cat-label{font-size:.78rem;font-weight:700;color:var(--navy);margin:9px 0 3px}
+    .quote-divider{border:none;border-top:1px solid var(--border);margin:12px 0}
+    .quote-total{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
+    .quote-total-label{font-size:.9rem;font-weight:700;color:var(--navy)}
+    .quote-total-price{font-size:1.4rem;font-weight:800;color:var(--blue)}
+    .quote-install-badge{display:flex;align-items:center;gap:6px;margin-top:12px;padding:8px 10px;background:var(--accent);border-radius:7px;font-size:.78rem;color:var(--blue);font-weight:600}
+    .quote-custom-note{margin-top:10px;padding:8px 10px;background:#fef9c3;border-radius:7px;font-size:.76rem;color:#854d0e;line-height:1.5}
+    .quote-empty{text-align:center;padding:16px 0;color:var(--gray);font-size:.82rem;font-style:italic}
+    .quote-note{font-size:.74rem;color:var(--gray);margin-top:12px;line-height:1.55;padding-top:12px;border-top:1px solid var(--border)}
+
+    /* FOOTER */
+    footer{background:var(--navy);color:rgba(255,255,255,.75);padding:48px 24px 24px}
+    .footer-inner{max-width:1100px;margin:0 auto}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:40px}
+    @media(max-width:600px){.footer-grid{grid-template-columns:1fr}}
+    .footer-brand p{font-size:.88rem;margin-top:10px;opacity:.75;line-height:1.55}
+    footer h4{color:#fff;font-size:.9rem;margin-bottom:14px}
+    .footer-links{list-style:none}
+    .footer-links li{margin-bottom:8px}
+    .footer-links a{font-size:.85rem;opacity:.75;transition:opacity .15s}
+    .footer-links a:hover{opacity:1}
+    .footer-bottom{padding-top:20px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:.8rem;opacity:.6}
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="white" width="18" height="18"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6L12 2zm0 2.18l6 2.7V12c0 4.2-2.8 8.1-6 9.5C8.8 20.1 6 16.2 6 12V6.88l6-2.7z"/></svg>
+      </div>
+      NJ CyberGuard
+    </div>
+    <div class="nav-links">
+      <a href="/#services">Services</a>
+      <a href="/#why">Why Us</a>
+      <a href="/#contact">Contact</a>
+      <a href="/build-your-system" class="nav-cta">Get a Quote</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ────────────────────────────────────────────────────── -->
+<div class="page-hero">
+  <div class="label">System Builder</div>
+  <h1>Build Your Custom System</h1>
+  <p>Pick your property type, ecosystem, and exactly the devices you need. We'll send you a detailed quote — no pressure, no surprises.</p>
+</div>
+
+<!-- ── BUILDER ─────────────────────────────────────────────────── -->
+<div class="builder-wrap">
+<div class="builder-main">
+
+  <!-- Step 1: Property Type -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">Property Type</div>
+        <div class="step-subtitle">Helps us size the installation correctly</div>
+      </div>
+    </div>
+    <div class="property-grid">
+      <button class="prop-btn selected" data-prop="residential" onclick="selectProperty(this)">
+        <div class="prop-icon">🏠</div>
+        <div class="prop-label">Residential</div>
+        <div class="prop-desc">Home or apartment</div>
+      </button>
+      <button class="prop-btn" data-prop="commercial" onclick="selectProperty(this)">
+        <div class="prop-icon">🏢</div>
+        <div class="prop-label">Small Business</div>
+        <div class="prop-desc">Office, retail, or warehouse</div>
+      </button>
+      <button class="prop-btn" data-prop="multifamily" onclick="selectProperty(this)">
+        <div class="prop-icon">🏗️</div>
+        <div class="prop-label">Multi-Family</div>
+        <div class="prop-desc">Duplex, complex, or HOA</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 2: Ecosystem -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">Smart Home Ecosystem</div>
+        <div class="step-subtitle">What platform do your smart devices use? We'll make sure everything is compatible.</div>
+      </div>
+    </div>
+    <div class="eco-grid">
+      <button class="eco-btn" data-eco="apple" onclick="selectEco(this)">
+        <div class="eco-icon">🍎</div>
+        <div class="eco-label">Apple Home</div>
+        <div class="eco-desc">iPhone/iPad users. Uses HomeKit &amp; Matter.</div>
+      </button>
+      <button class="eco-btn" data-eco="google" onclick="selectEco(this)">
+        <div class="eco-icon">🔵</div>
+        <div class="eco-label">Google Home</div>
+        <div class="eco-desc">Android / Nest users. Works with Matter.</div>
+      </button>
+      <button class="eco-btn" data-eco="alexa" onclick="selectEco(this)">
+        <div class="eco-icon">🟠</div>
+        <div class="eco-label">Amazon Alexa</div>
+        <div class="eco-desc">Voice-first. Echo / Ring ecosystem.</div>
+      </button>
+      <button class="eco-btn" data-eco="ha" onclick="selectEco(this)">
+        <div class="eco-icon">🏡</div>
+        <div class="eco-label">Home Assistant</div>
+        <div class="eco-desc">Local control, privacy-first, most powerful.</div>
+      </button>
+      <button class="eco-btn" data-eco="smartthings" onclick="selectEco(this)">
+        <div class="eco-icon">📱</div>
+        <div class="eco-label">SmartThings</div>
+        <div class="eco-desc">Samsung ecosystem. Multi-protocol hub.</div>
+      </button>
+      <button class="eco-btn" data-eco="none" onclick="selectEco(this)">
+        <div class="eco-icon">🤔</div>
+        <div class="eco-label">Not Sure Yet</div>
+        <div class="eco-desc">We'll recommend the best fit for you.</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 3: Security Devices -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">Security Devices</div>
+        <div class="step-subtitle">Select products and quantities. WiFi = wireless setup. PoE/Wired = cable run required. Zigbee/Z-Wave = hub required.</div>
+      </div>
+    </div>
+    <div id="cat-list"><!-- rendered by JS --></div>
+  </div>
+
+  <!-- Step 4: Additional Services -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">Additional Services</div>
+        <div class="step-subtitle">Network infrastructure, storage, and smart home upgrades. All installed and configured by us.</div>
+      </div>
+    </div>
+
+    <div class="svc-section-label">🌐 Network &amp; Infrastructure</div>
+    <div class="svc-grid">
+      <div class="svc-card" data-svc="router_hardening" onclick="toggleService(this)">
+        <div class="svc-check"></div>
+        <div class="svc-icon">🛡️</div>
+        <div class="svc-name">Router Security Hardening</div>
+        <div class="svc-price">$149 — service only</div>
+        <div class="svc-desc">VLANs, firewall rules, IoT network isolation, and security audit of your existing router.</div>
+      </div>
+      <div class="svc-card" data-svc="wifi_ap" onclick="toggleService(this)">
+        <div class="svc-check"></div>
+        <div class="svc-icon">📡</div>
+        <div class="svc-name">WiFi Access Point (per AP)</div>
+        <div class="svc-price">$149/unit — hardware &amp; setup</div>
+        <div class="svc-desc">TP-Link EAP670 enterprise-grade AP. Eliminates dead zones. Includes mounting and configuration.</div>
+      </div>
+      <div class="svc-card" data-svc="mesh_upgrade" onclick="toggleService(this)">
+        <div class="svc-check"></div>
+        <div class="svc-icon">🔗</div>
+        <div class="svc-name">Mesh WiFi Upgrade (3-pack)</div>
+        <div class="svc-price">$449 — hardware &amp; setup</div>
+        <div class="svc-desc">Eero Pro 6E or TP-Link Deco AXE. Whole-home coverage, seamless roaming. Includes setup and optimization.</div>
+      </div>
+      <div class="svc-card" data-svc="nas_2bay" onclick="toggleService(this)">
+        <div class="svc-check"></div>
+        <div class="svc-icon">💾</div>
+        <div class="svc-name">Network Storage — 2-Bay NAS</div>
+        <div class="svc-price">$349 — hardware &amp; setup</div>
+        <div class="svc-desc">Synology DS223 with 1 TB. Remote access, camera recording, automatic backups. Great for homes and small offices.</div>
+      </div>
+      <div class="svc-card" data-svc="nas_4bay" onclick="toggleService(this)">
+        <div class="svc-check"></div>
+        <div class="svc-icon">🗄️</div>
+        <div class="svc-name">Network Storage — 4-Bay NAS</div>
+        <div class="svc-price">$549 — hardware &amp; setup</div>
+        <div class="svc-desc">Synology DS423+ with RAID. Surveillance Station NVR, redundant storage, and remote access for businesses.</div>
+      </div>
+    </div>
+
+    <div class="svc-section-label">🏡 Smart Home Upgrades</div>
+    <div class="svc-grid">
+      <div class="svc-card" data-svc="ha_hub" onclick="toggleService(this)">
+        <div class="svc-check"></div>
+        <div class="svc-icon">🟠</div>
+        <div class="svc-name">Home Assistant Hub</div>
+        <div class="svc-price">$348 — hardware &amp; setup</div>
+        <div class="svc-desc">Home Assistant Green + Zigbee/Z-Wave USB stick. Local control of all your devices. No cloud dependency. Initial setup included.</div>
+      </div>
+      <div class="svc-card featured" data-svc="ha_premium" onclick="toggleService(this)">
+        <div class="svc-featured-tag">⭐ Premium</div>
+        <div class="svc-check"></div>
+        <div class="svc-icon">🖥️</div>
+        <div class="svc-name">Home Assistant + Touchscreen</div>
+        <div class="svc-price">$699 — hardware &amp; setup</div>
+        <div class="svc-desc">HA on a mini PC + 7" wall-mounted touchscreen dashboard. Live camera feeds, lock control, automation scenes — all in one beautiful panel.</div>
+      </div>
+      <div class="svc-card" data-svc="automations_basic" onclick="toggleService(this)">
+        <div class="svc-check"></div>
+        <div class="svc-icon">⚡</div>
+        <div class="svc-name">Basic Automations — 5 Scenarios</div>
+        <div class="svc-price">$199 — service</div>
+        <div class="svc-desc">We configure 5 custom automations: motion-triggered lights, arrival/departure routines, alerts, schedules, and more.</div>
+      </div>
+      <div class="svc-card" data-svc="automations_advanced" onclick="toggleService(this)">
+        <div class="svc-check"></div>
+        <div class="svc-icon">🤖</div>
+        <div class="svc-name">Advanced Automations Package</div>
+        <div class="svc-price">$399 — service</div>
+        <div class="svc-desc">Unlimited automations + 1 month of adjustments. Complex scenes, conditional logic, multi-device routines. We handle everything.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 5: Contact & Quote -->
+  <div class="step-card">
+    <div class="step-header">
+      <div class="step-num">5</div>
+      <div>
+        <div class="step-title">Get Your Quote</div>
+        <div class="step-subtitle">We'll review your selections and reach out within one business day with a final quote.</div>
+      </div>
+    </div>
+    <form onsubmit="submitQuote(event)">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>First Name <span class="form-required">*</span></label>
+          <input id="fname" type="text" placeholder="John" required>
+        </div>
+        <div class="form-group">
+          <label>Last Name <span class="form-required">*</span></label>
+          <input id="lname" type="text" placeholder="Smith" required>
+        </div>
+        <div class="form-group">
+          <label>Email <span class="form-required">*</span></label>
+          <input id="email" type="email" placeholder="john@example.com" required>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input id="phone" type="tel" placeholder="(555) 555-5555">
+        </div>
+        <div class="form-group full">
+          <label>Town / City in NJ</label>
+          <input id="location" type="text" placeholder="e.g. Hoboken, Montclair, Princeton">
+        </div>
+        <div class="form-group full">
+          <label>Additional Notes</label>
+          <textarea id="notes" placeholder="Any specific requirements, existing equipment, or questions?"></textarea>
+        </div>
+      </div>
+      <button class="form-submit" id="submitBtn" type="submit">Send My Quote Request →</button>
+      <div class="form-success" id="formSuccess">✅ <strong>Request sent!</strong> We'll be in touch within one business day.</div>
+      <div class="form-error" id="formError">Something went wrong. Please email us directly at <strong>info@njcyberguard.com</strong>.</div>
+    </form>
+  </div>
+
+</div><!-- /.builder-main -->
+
+<!-- SIDEBAR -->
+<div class="quote-sidebar">
+  <div class="quote-card">
+    <div class="quote-header">
+      <h3>Your Estimate</h3>
+      <p>Updates as you build</p>
+    </div>
+    <div class="quote-body" id="quoteBody">
+      <div class="quote-line">
+        <span>Property</span>
+        <strong id="quotePropType">Residential</strong>
+      </div>
+      <div class="quote-line">
+        <span>Ecosystem</span>
+        <strong id="quoteEco">—</strong>
+      </div>
+      <hr class="quote-divider">
+      <div id="quoteItems"><div class="quote-empty">No products selected yet</div></div>
+      <div id="quoteInstallRow" style="display:none">
+        <hr class="quote-divider">
+        <div class="quote-line">
+          <span>Equipment subtotal</span>
+          <strong id="quoteEquip">$0</strong>
+        </div>
+        <div class="quote-install-badge" id="quoteInstallBadge">
+          🔧 <span id="quoteInstallLabel">Professional installation</span>
+          <strong id="quoteInstallPrice" style="margin-left:auto"></strong>
+        </div>
+      </div>
+      <div id="quoteSvcRow" style="display:none">
+        <hr class="quote-divider">
+        <div class="quote-cat-label">Add-On Services</div>
+        <div id="quoteSvcLines"></div>
+      </div>
+      <hr class="quote-divider">
+      <div class="quote-total">
+        <span class="quote-total-label">Estimated Total</span>
+        <span class="quote-total-price" id="quoteTotal">$0</span>
+      </div>
+      <div id="quoteCustomNote" class="quote-custom-note" style="display:none">
+        16+ devices detected — final installation price will be quoted separately based on scope.
+      </div>
+      <p class="quote-note">Estimates include equipment &amp; installation. Final quote provided after site assessment. No deposit required.</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.builder-wrap -->
+
+<!-- ── FOOTER ──────────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo" style="color:#fff">
+          <div class="logo-icon">
+            <svg viewBox="0 0 24 24" fill="white" width="18" height="18"><path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5C16.5 22.15 20 17.25 20 12V6L12 2zm0 2.18l6 2.7V12c0 4.2-2.8 8.1-6 9.5C8.8 20.1 6 16.2 6 12V6.88l6-2.7z"/></svg>
+          </div>
+          NJ CyberGuard
+        </div>
+        <p>Professional smart home, security, and network solutions across New Jersey. Licensed, insured, and locally owned.</p>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul class="footer-links">
+          <li><a href="/#services">Security Systems</a></li>
+          <li><a href="/#services">Smart Home Setup</a></li>
+          <li><a href="/#services">Network &amp; WiFi</a></li>
+          <li><a href="/build-your-system">Build Your System</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul class="footer-links">
+          <li><a href="mailto:info@njcyberguard.com">info@njcyberguard.com</a></li>
+          <li><a href="/#contact">Request a Quote</a></li>
+          <li><a href="/#why">About Us</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2025 NJ CyberGuard LLC. All rights reserved.</span>
+      <span>Serving New Jersey</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+
+const ecosystemLabels = {
+  apple:'Apple Home', google:'Google Home', alexa:'Amazon Alexa',
+  ha:'Home Assistant', smartthings:'SmartThings', none:'Not specified'
+};
+
+const categories = [
+  { id:'indoor_cam', label:'Indoor Camera', icon:'📷',
+    hint:'WiFi cameras — no cable runs needed',
+    items:[
+      { id:'eufy_indoor',  name:'Eufy Indoor Cam 2K',         price:64,  conn:'wifi',
+        spec:'2K · Pan/Tilt 360° · 2-way audio · Apple Home, Alexa, Google' },
+      { id:'aqara_g3',     name:'Aqara Camera Hub G3',         price:89,  conn:'zigbee',
+        spec:'1080p · AI recognition · HomeKit / HA / Alexa · Acts as Zigbee hub' },
+      { id:'reolink_e1',   name:'Reolink E1 Pro 4MP',          price:69,  conn:'wifi',
+        spec:'4MP · RTSP stream · 2-way audio · Home Assistant ready · No sub fee' },
+      { id:'wyze_v4',      name:'Wyze Cam v4',                 price:39,  conn:'wifi',
+        spec:'2.5K · Color night vision · Budget pick · Alexa &amp; Google Home' },
+    ]},
+  { id:'doorbell', label:'Doorbell Camera', icon:'🔔',
+    hint:'Wired = requires existing doorbell wiring. WiFi = battery or existing power.',
+    items:[
+      { id:'eufy_db_wired',  name:'Eufy Doorbell 2K (Wired)',      price:169, conn:'wired',
+        spec:'2K · Local storage · No monthly fee · Requires doorbell wiring' },
+      { id:'eufy_db_dual',   name:'Eufy E340 Dual Lens (Wired)',    price:229, conn:'wired',
+        spec:'2K + color floodlight · 180° view · Package detection · Wired' },
+      { id:'aqara_g4',       name:'Aqara Doorbell G4',              price:239, conn:'wifi',
+        spec:'HomeKit Secure Video · Facial recognition · WiFi or wired power' },
+      { id:'reolink_db',     name:'Reolink Doorbell WiFi',          price:159, conn:'wifi',
+        spec:'5MP · No subscription · RTSP / Home Assistant · Solar option available' },
+    ]},
+  { id:'outdoor_cam', label:'Outdoor Camera', icon:'📹',
+    hint:'Solar/WiFi = truly wireless. PoE = highest quality, requires cable run.',
+    items:[
+      { id:'eufy_solar',     name:'Eufy SoloCam S230 (Solar)',      price:139, conn:'solar',
+        spec:'2K · Solar powered · No wiring needed · Color night vision · Local storage' },
+      { id:'reolink_argus',  name:'Reolink Argus 3 Pro',            price:119, conn:'wifi',
+        spec:'2K · Color night vision · Solar compatible · RTSP / Home Assistant' },
+      { id:'reolink_810a',   name:'Reolink RLC-810A 4K (PoE)',      price:89,  conn:'poe',
+        spec:'4K · PoE · Smart detection · RTSP / Home Assistant · No subscription' },
+      { id:'ubiquiti_g4i',   name:'Ubiquiti G4 Instant (PoE)',      price:99,  conn:'poe',
+        spec:'4MP · PoE · UniFi Protect ecosystem · Flexible outdoor mounting' },
+      { id:'ubiquiti_g4b',   name:'Ubiquiti G4 Bullet (PoE)',       price:139, conn:'poe',
+        spec:'4MP · PoE · Wide varifocal lens · All-weather · UniFi Protect' },
+      { id:'ubiquiti_g5pro', name:'Ubiquiti G5 Pro 4K (PoE)',       price:219, conn:'poe',
+        spec:'4K · PoE · Motorized zoom · AI detection · UniFi Protect' },
+    ]},
+  { id:'sensor', label:'Motion &amp; Door Sensors', icon:'🚨',
+    hint:'Zigbee/Z-Wave require a hub (like Home Assistant or SmartThings)',
+    items:[
+      { id:'aqara_door',   name:'Aqara Door/Window Sensor P2',  price:22, conn:'zigbee',
+        spec:'Zigbee / Matter · HomeKit, HA, Alexa · 2-year battery life' },
+      { id:'aqara_motion', name:'Aqara Motion Sensor P1',       price:28, conn:'zigbee',
+        spec:'Zigbee · 170° detection · HomeKit, HA, Alexa · Adjustable sensitivity' },
+      { id:'aqara_fp2',    name:'Aqara Presence Sensor FP2',    price:84, conn:'wifi',
+        spec:'mmWave radar · Zone detection · WiFi · No false alarms · No battery' },
+      { id:'zwave_door',   name:'Z-Wave Plus Door Sensor',      price:38, conn:'zwave',
+        spec:'Z-Wave · Long range · Works with HA, SmartThings, Vera · 3-year battery' },
+      { id:'zwave_motion', name:'Z-Wave Plus Motion Sensor',    price:48, conn:'zwave',
+        spec:'Z-Wave · PIR + temperature sensor · Tamper detection · Adjustable timeout' },
+    ]},
+  { id:'smart_lock', label:'Smart Lock', icon:'🔐',
+    hint:'WiFi locks connect directly. Zigbee/Z-Wave require a hub.',
+    items:[
+      { id:'aqara_u100',   name:'Aqara U100 Smart Lock',       price:189, conn:'zigbee',
+        spec:'Fingerprint · NFC · HomeKit · Zigbee · Auto-lock · Keypad + app' },
+      { id:'august_gen4',  name:'August Smart Lock Gen 4',     price:199, conn:'wifi',
+        spec:'Fits existing deadbolt · No locksmith needed · WiFi · Apple Home, Google, Alexa' },
+      { id:'schlage_plus', name:'Schlage Encode Plus',         price:229, conn:'wifi',
+        spec:'Built-in WiFi + HomeKit · No hub needed · Keypad + app · Grade 1 security' },
+      { id:'yale_assure2', name:'Yale Assure Lock 2 Plus',     price:219, conn:'zwave',
+        spec:'Z-Wave/Zigbee/WiFi · Works with all ecosystems · Keypad · Alexa Guard' },
+    ]},
+  { id:'smart_switch', label:'Smart Switch &amp; Outlet', icon:'💡',
+    hint:'Zigbee switches need a hub. WiFi and RF connect directly.',
+    items:[
+      { id:'aqara_sw1',    name:'Aqara H1 Single Switch',      price:26, conn:'zigbee',
+        spec:'Zigbee · No neutral wire needed · HomeKit, HA, Alexa · Screwless design' },
+      { id:'aqara_sw2',    name:'Aqara H1 Double Switch',      price:36, conn:'zigbee',
+        spec:'Zigbee · Dual gang · Controls 2 independent circuits' },
+      { id:'lutron',       name:'Lutron Caseta Dimmer',        price:59, conn:'rf',
+        spec:'ClearConnect RF · Most reliable smart switch · Apple Home, Alexa · No hub dropout' },
+      { id:'kasa_ep25',    name:'Kasa Smart Plug EP25',        price:25, conn:'wifi',
+        spec:'WiFi · Energy monitoring · Alexa, Google, SmartThings · Compact design' },
+    ]},
+];
+
+const connLabels = {
+  wifi:   { label:'📶 WiFi',      cls:'conn-wifi'   },
+  poe:    { label:'⚡ PoE/Wired', cls:'conn-poe'    },
+  wired:  { label:'🔌 Wired',     cls:'conn-wired'  },
+  zigbee: { label:'◆ Zigbee',     cls:'conn-zigbee' },
+  zwave:  { label:'◆ Z-Wave',     cls:'conn-zwave'  },
+  solar:  { label:'☀ Solar',      cls:'conn-solar'  },
+  rf:     { label:'◆ RF',         cls:'conn-rf'     },
+};
+
+const servicePrices = {
+  router_hardening:   149,
+  wifi_ap:            149,
+  mesh_upgrade:       449,
+  nas_2bay:           349,
+  nas_4bay:           549,
+  ha_hub:             348,
+  ha_premium:         699,
+  automations_basic:  199,
+  automations_advanced: 399,
+};
+
+const serviceLabels = {
+  router_hardening:   'Router Security Hardening',
+  wifi_ap:            'WiFi Access Point',
+  mesh_upgrade:       'Mesh WiFi Upgrade (3-pack)',
+  nas_2bay:           'NAS Storage — 2-Bay',
+  nas_4bay:           'NAS Storage — 4-Bay',
+  ha_hub:             'Home Assistant Hub',
+  ha_premium:         'Home Assistant + Touchscreen',
+  automations_basic:  'Basic Automations (5 scenarios)',
+  automations_advanced: 'Advanced Automations',
+};
+
+// Install tiers (device count → flat fee)
+const installTiers = [
+  { min:1,  max:4,   price:249  },
+  { min:5,  max:9,   price:399  },
+  { min:10, max:15,  price:549  },
+  { min:16, max:999, price:-1   }, // custom
+];
+
+let state = {
+  property: 'residential',
+  ecosystem: '',
+  quantities: {},
+  services: {},
+};
+
+// ── RENDER CATEGORIES ─────────────────────────────────────────────────────────
+function renderCategories() {
+  const container = document.getElementById('cat-list');
+  container.innerHTML = categories.map(cat => `
+    <div class="cat-section" id="cat-${cat.id}">
+      <div class="cat-header" onclick="toggleCat('${cat.id}', this)">
+        <span class="cat-icon">${cat.icon}</span>
+        <div class="cat-info">
+          <div class="cat-name">${cat.label}</div>
+          <div class="cat-hint">${cat.hint}</div>
+        </div>
+        <span class="cat-badge" id="badge-${cat.id}"></span>
+        <span class="cat-chevron">▼</span>
+      </div>
+      <div class="cat-body" id="body-${cat.id}">
+        ${cat.items.map(item => renderProdRow(item)).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderProdRow(item) {
+  const c = connLabels[item.conn] || { label: item.conn, cls: 'conn-rf' };
+  return `
+    <div class="prod-row" id="row-${item.id}">
+      <div class="prod-main">
+        <div class="prod-name">${item.name}</div>
+        <div class="prod-spec">${item.spec}</div>
+        <div class="prod-meta">
+          <span class="conn ${c.cls}">${c.label}</span>
+          <span class="prod-price-tag">$${item.price}</span>
+        </div>
+      </div>
+      <div class="prod-controls">
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty('${item.id}', -1)" id="dec-${item.id}" disabled>−</button>
+          <span class="qty-val" id="qty-${item.id}">0</span>
+          <button class="qty-btn" onclick="changeQty('${item.id}', 1)">+</button>
+        </div>
+        <div class="prod-subtotal zero" id="sub-${item.id}">$0</div>
+      </div>
+    </div>`;
+}
+
+// ── INTERACTIONS ──────────────────────────────────────────────────────────────
+function selectProperty(btn) {
+  document.querySelectorAll('.prop-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.property = btn.dataset.prop;
+  const labels = { residential:'Residential', commercial:'Small Business', multifamily:'Multi-Family' };
+  document.getElementById('quotePropType').textContent = labels[state.property];
+  updateQuote();
+}
+
+function selectEco(btn) {
+  document.querySelectorAll('.eco-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.ecosystem = btn.dataset.eco;
+  document.getElementById('quoteEco').textContent = ecosystemLabels[state.ecosystem] || '—';
+  updateQuote();
+}
+
+function toggleCat(id, headerEl) {
+  const body = document.getElementById('body-' + id);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  headerEl.classList.toggle('open', !isOpen);
+}
+
+function changeQty(id, delta) {
+  const cur = state.quantities[id] || 0;
+  const next = Math.max(0, cur + delta);
+  state.quantities[id] = next;
+
+  const qtyEl  = document.getElementById('qty-' + id);
+  const decBtn = document.getElementById('dec-' + id);
+  const subEl  = document.getElementById('sub-' + id);
+
+  // Find the item price
+  let price = 0;
+  for (const cat of categories) {
+    const found = cat.items.find(i => i.id === id);
+    if (found) { price = found.price; break; }
+  }
+
+  qtyEl.textContent = next;
+  decBtn.disabled = next === 0;
+  const sub = price * next;
+  subEl.textContent = '$' + sub.toLocaleString();
+  subEl.classList.toggle('zero', sub === 0);
+
+  // Update category badge
+  for (const cat of categories) {
+    if (!cat.items.find(i => i.id === id)) continue;
+    const total = cat.items.reduce((s, i) => s + (state.quantities[i.id] || 0), 0);
+    const badge = document.getElementById('badge-' + cat.id);
+    badge.textContent = total > 0 ? total + (total === 1 ? ' item' : ' items') : '';
+    break;
+  }
+
+  updateQuote();
+}
+
+function toggleService(card) {
+  const id = card.dataset.svc;
+  state.services[id] = !state.services[id];
+  card.classList.toggle('selected', !!state.services[id]);
+  updateQuote();
+}
+
+// ── QUOTE CALCULATION ─────────────────────────────────────────────────────────
+function updateQuote() {
+  let equipCost = 0, totalDevices = 0, itemsHtml = '';
+
+  for (const cat of categories) {
+    const sel = cat.items.filter(i => (state.quantities[i.id] || 0) > 0);
+    if (!sel.length) continue;
+    itemsHtml += `<div class="quote-cat-label">${cat.icon} ${cat.label}</div>`;
+    for (const item of sel) {
+      const qty = state.quantities[item.id];
+      const sub = item.price * qty;
+      equipCost    += sub;
+      totalDevices += qty;
+      itemsHtml += `
+        <div class="quote-line indent">
+          <span>${item.name} ×${qty}</span>
+          <strong>$${sub.toLocaleString()}</strong>
+        </div>`;
+    }
+  }
+
+  // Install tier
+  let installPrice = 0, installLabel = '', showCustomNote = false;
+  if (totalDevices > 0) {
+    const tier = installTiers.find(t => totalDevices >= t.min && totalDevices <= t.max);
+    if (tier && tier.price > 0) {
+      installPrice = tier.price;
+      installLabel = `Install (${tier.min}–${tier.max} devices)`;
+    } else if (tier && tier.price === -1) {
+      installPrice = 0;
+      installLabel = 'Install — custom quote';
+      showCustomNote = true;
+    }
+  }
+
+  // Services
+  let svcCost = 0, svcLines = '';
+  for (const [id, active] of Object.entries(state.services)) {
+    if (!active) continue;
+    const price = servicePrices[id] || 0;
+    svcCost  += price;
+    svcLines += `<div class="quote-line"><span>${serviceLabels[id] || id}</span><strong>$${price.toLocaleString()}</strong></div>`;
+  }
+
+  const total = equipCost + installPrice + svcCost;
+
+  // Update DOM
+  document.getElementById('quoteItems').innerHTML =
+    itemsHtml || '<div class="quote-empty">No products selected yet</div>';
+
+  const installRow = document.getElementById('quoteInstallRow');
+  if (totalDevices > 0) {
+    installRow.style.display = '';
+    document.getElementById('quoteEquip').textContent = '$' + equipCost.toLocaleString();
+    document.getElementById('quoteInstallLabel').textContent = installLabel;
+    document.getElementById('quoteInstallPrice').textContent =
+      installPrice > 0 ? '$' + installPrice.toLocaleString() : 'TBD';
+  } else {
+    installRow.style.display = 'none';
+  }
+
+  const svcRow = document.getElementById('quoteSvcRow');
+  if (svcLines) {
+    svcRow.style.display = '';
+    document.getElementById('quoteSvcLines').innerHTML = svcLines;
+  } else {
+    svcRow.style.display = 'none';
+  }
+
+  document.getElementById('quoteTotal').textContent = '$' + total.toLocaleString();
+
+  const customNote = document.getElementById('quoteCustomNote');
+  customNote.style.display = showCustomNote ? '' : 'none';
+}
+
+// ── FORM SUBMISSION ───────────────────────────────────────────────────────────
+async function submitQuote(e) {
+  e.preventDefault();
+  const btn     = document.getElementById('submitBtn');
+  const success = document.getElementById('formSuccess');
+  const error   = document.getElementById('formError');
+  success.style.display = 'none';
+  error.style.display   = 'none';
+  btn.textContent = 'Sending…';
+  btn.disabled    = true;
+
+  const fname    = document.getElementById('fname').value.trim();
+  const lname    = document.getElementById('lname').value.trim();
+  const email    = document.getElementById('email').value.trim();
+  const phone    = document.getElementById('phone').value.trim();
+  const location = document.getElementById('location').value.trim();
+  const notes    = document.getElementById('notes').value.trim();
+
+  let equipCost = 0, totalDevices = 0, equipSummary = '';
+  for (const cat of categories) {
+    for (const item of cat.items) {
+      const qty = state.quantities[item.id] || 0;
+      if (qty > 0) {
+        const sub     = item.price * qty;
+        equipCost    += sub;
+        totalDevices += qty;
+        equipSummary += `\n  • ${item.name} ×${qty} = $${sub.toLocaleString()}`;
+      }
+    }
+  }
+
+  const tier = installTiers.find(t => totalDevices >= t.min && totalDevices <= t.max);
+  const installPrice = (tier && tier.price > 0) ? tier.price : 0;
+  const installNote  = (tier && tier.price === -1) ? 'Custom quote required (16+ devices)' :
+                       installPrice > 0 ? `$${installPrice} flat rate (${tier.min}–${tier.max} devices)` : 'N/A';
+
+  let svcCost = 0, svcSummary = '';
+  for (const [id, active] of Object.entries(state.services)) {
+    if (!active) continue;
+    const price = servicePrices[id] || 0;
+    svcCost    += price;
+    svcSummary += `\n  • ${serviceLabels[id] || id} — $${price.toLocaleString()}`;
+  }
+
+  const total = equipCost + installPrice + svcCost;
+  const ecoLabel = ecosystemLabels[state.ecosystem] || 'Not specified';
+  const propLabels = { residential:'Residential', commercial:'Small Business', multifamily:'Multi-Family' };
+
+  const message = `SYSTEM QUOTE REQUEST
+
+Property Type: ${propLabels[state.property] || state.property}
+Smart Home Ecosystem: ${ecoLabel}
+Location: ${location || 'Not provided'}
+
+─── Selected Equipment ───${equipSummary || '\n  None selected'}
+
+─── Installation ───
+${installNote}
+
+─── Add-On Services ───${svcSummary || '\n  None selected'}
+
+─── Total Estimate ───
+Equipment: $${equipCost.toLocaleString()}
+Installation: ${installPrice > 0 ? '$' + installPrice.toLocaleString() : (totalDevices > 0 ? 'Custom' : '$0')}
+Services: $${svcCost.toLocaleString()}
+TOTAL: $${total.toLocaleString()}${installPrice === 0 && totalDevices > 0 ? ' (installation separate)' : ''}
+
+─── Customer Notes ───
+${notes || 'None'}`;
+
+  try {
+    const res = await fetch('/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: `${fname} ${lname}`,
+        email,
+        phone,
+        service: 'Custom Security System Quote',
+        message,
+      }),
+    });
+    if (res.ok) {
+      success.style.display = '';
+      btn.textContent = 'Request Sent ✓';
+    } else {
+      throw new Error('Non-OK response');
+    }
+  } catch {
+    error.style.display = '';
+    btn.textContent = 'Send My Quote Request →';
+    btn.disabled    = false;
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderCategories();
+</script>
+</body>
+</html>
